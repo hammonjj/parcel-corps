@@ -18,7 +18,7 @@ public abstract class MonoBehaviourBase : MonoBehaviour {
     [Tooltip("Minimum log level to output to the console.")]
     public LogLevel logLevel = LogLevel.Info;
 
-    protected IMessageBus MessageBus;
+    //protected IMessageBus MessageBus;
 
     private string _cachedObjectName;
     private int _debugId;

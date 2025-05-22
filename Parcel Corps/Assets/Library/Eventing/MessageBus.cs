@@ -132,8 +132,8 @@ public static class MessageBusExtensions
 }
 
 // Example message types:
-public struct PlayerDiedEvent {}
-public struct PlayerHitEvent { public int Damage; }
+//public struct PlayerDiedEvent {}
+//public struct PlayerHitEvent { public int Damage; }
 
 /* Usage example:
 

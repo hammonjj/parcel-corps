@@ -62,6 +62,12 @@ public class VehicleInputRelay : MonoBehaviourBase
         float steer = steerAction?.action.ReadValue<float>() ?? 0f;
         float brake = brakeAction?.action.ReadValue<float>() ?? 0f;
 
+        if (throttle != 0f || steer != 0f || brake != 0f)
+        {
+            Debug.Log($"Throttle: {throttle}, Steer: {steer}, Brake: {brake}");
+            return;
+        }
+        
         CommandQueue.Enqueue(Identity.Id, new SetThrottleCommand { Throttle = throttle });
         CommandQueue.Enqueue(Identity.Id, new SetSteeringCommand { Steering = steer });
         CommandQueue.Enqueue(Identity.Id, new SetBrakeCommand { BrakeAmount = brake });

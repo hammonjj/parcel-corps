@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyEntity : IUpdatableEntity
+public class EnemyEntity
 {
     public Vector2 Position { get; private set; }
 

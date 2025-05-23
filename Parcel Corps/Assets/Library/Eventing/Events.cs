@@ -1,7 +1,3 @@
-public struct DisableInputExceptActionEvent { }
-
-public struct EnableInputExceptActionEvent { }
-
 public struct PlayerActionButtonEvent { }
 
 public struct PlayerMovementEvent
@@ -10,22 +6,17 @@ public struct PlayerMovementEvent
   public float VerticalMovement;
 }
 
-public struct PlayerEnterVehicleEvent { }
+public struct PlayerEnterVehicleEvent
+{ 
+  public MessageBus VehicleMessageBus;
+}
 
 public struct PlayerExitVehicleEvent { }
 
-public struct PlayerThrottleEvent
+public struct PlayerDrivingEvent
 {
   public float Throttle;
-}
-
-public struct PlayerBrakeEvent
-{
   public float Brake;
-}
-
-public struct PlayerSteeringEvent
-{
   public float Steering;
 }
 

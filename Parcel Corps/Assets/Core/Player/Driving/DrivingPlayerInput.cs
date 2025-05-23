@@ -11,6 +11,7 @@ public class DrivingPlayerInput : MonoBehaviourBase
     [SerializeField] public InputActionReference brakeAction;
 
     private MessageBus _messageBus;
+    private MessageBus? _vehicleMessageBus;
 
     protected override void Awake()
     {
@@ -31,11 +32,13 @@ public class DrivingPlayerInput : MonoBehaviourBase
     private void OnPlayerExitVehicle(PlayerExitVehicleEvent @event)
     {
         DisableActions();
+        _vehicleMessageBus = null;
     }
 
     private void OnPlayerEnterVehicle(PlayerEnterVehicleEvent @event)
     {
         EnableActions();
+        _vehicleMessageBus = @event.VehicleMessageBus;
     }
 
     protected void OnDisable()
@@ -50,24 +53,14 @@ public class DrivingPlayerInput : MonoBehaviourBase
             return;
         }
 
-        var playerSteeringEvent = new PlayerSteeringEvent
+        var playerDrivingEvent = new PlayerDrivingEvent
         {
-            Steering = steeringAction?.action.ReadValue<float>() ?? 0f
-        };
-
-        var playerThrottleEvent = new PlayerThrottleEvent
-        {
-            Throttle = acceleratorAction?.action.ReadValue<float>() ?? 0f
-        };
-
-        var playerBrakeEvent = new PlayerBrakeEvent
-        {
+            Steering = steeringAction?.action.ReadValue<float>() ?? 0f,
+            Throttle = acceleratorAction?.action.ReadValue<float>() ?? 0f,
             Brake = brakeAction?.action.ReadValue<float>() ?? 0f
         };
-        
-        _messageBus?.Publish(playerThrottleEvent);
-        _messageBus?.Publish(playerBrakeEvent);
-        _messageBus?.Publish(playerSteeringEvent);
+
+        _vehicleMessageBus?.Publish(playerDrivingEvent);
     }
 
     private void OnActionAction(InputAction.CallbackContext context)

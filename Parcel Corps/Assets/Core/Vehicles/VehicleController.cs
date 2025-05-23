@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class VehicleController : MonoBehaviourBase
@@ -16,6 +17,12 @@ public class VehicleController : MonoBehaviourBase
 
     _sceneMessageBus.Subscribe<PlayerEnterVehicleEvent>(OnPlayerEnterVehicle);
     _sceneMessageBus.Subscribe<PlayerExitVehicleEvent>(OnPlayerExitVehicle);
+    _messageBus.Subscribe<PlayerDrivingEvent>(OnPlayerDriving);
+  }
+
+  private void OnPlayerDriving(PlayerDrivingEvent @event)
+  {
+    LogDebug("OnPlayerDriving");
   }
 
   private void OnPlayerExitVehicle(PlayerExitVehicleEvent @event)

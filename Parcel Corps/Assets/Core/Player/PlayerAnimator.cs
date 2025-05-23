@@ -31,6 +31,13 @@ public class PlayerAnimator : MonoBehaviourBase
     _animator.SetBool("isDriving", true);
   }
 
+//⚠️ This method must be public, take no parameters, and exist on the same GameObject as the Animator.
+  //   public void OnEnterVehicleFinished()
+  // {
+  //     LogDebug("EnterVehicle animation completed.");
+  //     _animator.SetBool("isDriving", true);
+  // }
+
   protected void OnDisable()
   {
     _messageBus?.Unsubscribe<PlayerMovementEvent>(OnPlayerMovementEvent);

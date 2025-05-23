@@ -31,9 +31,9 @@ public class VehicleState : MonoBehaviourBase
 
     if (!isPlayerInVehicle)
     {
-      LogDebug("Player is not in vehicle.");
+      LogDebug("Player is entering vehicle.");
       isPlayerInVehicle = true;
-      _sceneMessageBus.Publish(new PlayerEnterVehicleEvent());
+      _sceneMessageBus.Publish(new PlayerEnterVehicleEvent { VehicleMessageBus = _messageBus });
     }
   }
 

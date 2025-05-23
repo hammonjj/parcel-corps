@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ThirdPersonPlayerAnimator : MonoBehaviourBase
+public class PlayerAnimator : MonoBehaviourBase
 {
   private MessageBus _messageBus;
   [SerializeField] private Animator _animator;
@@ -16,19 +16,24 @@ public class ThirdPersonPlayerAnimator : MonoBehaviourBase
 
     _messageBus = GameObject.FindWithTag("PlayerMessageBus")?.GetComponent<MessageBus>();
     _messageBus?.Subscribe<PlayerMovementEvent>(OnPlayerMovementEvent);
-    _messageBus?.Subscribe<PlayerActionButtonEvent>(OnPlayerActionEvent);
+    _sceneMessageBus.Subscribe<PlayerEnterVehicleEvent>(OnPlayerEnterVehicle);
+    _sceneMessageBus.Subscribe<PlayerExitVehicleEvent>(OnPlayerExitVehicle);
+  }
+
+  private void OnPlayerExitVehicle(PlayerExitVehicleEvent @event)
+  {
+    _animator.SetBool("isDriving", false);
+  }
+
+  private void OnPlayerEnterVehicle(PlayerEnterVehicleEvent @event)
+  {
+    _animator.SetBool("isRunning", false);
+    _animator.SetBool("isDriving", true);
   }
 
   protected void OnDisable()
   {
     _messageBus?.Unsubscribe<PlayerMovementEvent>(OnPlayerMovementEvent);
-    _messageBus?.Unsubscribe<PlayerActionButtonEvent>(OnPlayerActionEvent);
-  }
-
-  private void OnPlayerActionEvent(PlayerActionButtonEvent @event)
-  {
-    LogDebug("Action received");
-    _animator.SetTrigger("sit");
   }
 
   private void OnPlayerMovementEvent(PlayerMovementEvent @event)

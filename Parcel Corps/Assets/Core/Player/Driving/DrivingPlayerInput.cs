@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class DrivingPlayerInput : MonoBehaviourBase
 {
+    private bool _actionsDisabled = false;
     [SerializeField] public InputActionReference actionAction;
     [SerializeField] public InputActionReference steeringAction;
     [SerializeField] public InputActionReference acceleratorAction;
@@ -20,6 +22,70 @@ public class DrivingPlayerInput : MonoBehaviourBase
         base.OnEnable();
 
         _messageBus = GameObject.FindWithTag("PlayerMessageBus")?.GetComponent<MessageBus>();
+        _sceneMessageBus.Subscribe<PlayerEnterVehicleEvent>(OnPlayerEnterVehicle);
+        _sceneMessageBus.Subscribe<PlayerExitVehicleEvent>(OnPlayerExitVehicle);
+
+        DisableActions();
+    }
+
+    private void OnPlayerExitVehicle(PlayerExitVehicleEvent @event)
+    {
+        DisableActions();
+    }
+
+    private void OnPlayerEnterVehicle(PlayerEnterVehicleEvent @event)
+    {
+        EnableActions();
+    }
+
+    protected void OnDisable()
+    {
+        DisableActions();
+    }
+
+    private void Update()
+    {
+        if (_actionsDisabled)
+        {
+            return;
+        }
+
+        var playerSteeringEvent = new PlayerSteeringEvent
+        {
+            Steering = steeringAction?.action.ReadValue<float>() ?? 0f
+        };
+
+        _messageBus?.Publish(playerSteeringEvent);
+    }
+
+    private void OnActionAction(InputAction.CallbackContext context)
+    {
+        Debug.Log("Action performed");
+        _messageBus?.Publish(new PlayerActionButtonEvent { });
+    }
+    
+    private void DisableActions()
+    {
+        _actionsDisabled = true;
+
+        if (steeringAction != null)
+        {
+            steeringAction.action.Disable();
+        }
+
+        if (acceleratorAction != null)
+        {
+            acceleratorAction.action.Disable();
+        }
+
+        if (actionAction != null)
+        {
+            actionAction.action.Disable();
+        }
+    }
+    private void EnableActions()
+    {
+        _actionsDisabled = false;
 
         if (steeringAction != null)
         {
@@ -36,41 +102,9 @@ public class DrivingPlayerInput : MonoBehaviourBase
             actionAction.action.Enable();
             actionAction.action.performed += OnActionAction;
         }
-    }
-
-    protected void OnDisable()
-    {
-        if (steeringAction != null)
+        if (brakeAction != null)
         {
-            steeringAction.action.Disable();
+            brakeAction.action.Enable();
         }
-
-        if (acceleratorAction != null)
-        {
-            acceleratorAction.action.Disable();
-        }
-
-        if (actionAction != null)
-        {
-            actionAction.action.Disable();
-        }
-    }
-
-    private void Update()
-    {
-        var playerSteeringEvent = new PlayerSteeringEvent
-        {
-            Steering = steeringAction?.action.ReadValue<float>() ?? 0f
-        };
-
-        LogDebug($"Steering event: {playerSteeringEvent.Steering}");
-
-        _messageBus?.Publish(playerSteeringEvent);
-    }
-
-    private void OnActionAction(InputAction.CallbackContext context)
-    {
-        Debug.Log("Action performed");
-        _messageBus?.Publish(new PlayerActionButtonEvent { });
     }
 }

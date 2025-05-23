@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class VehicleState : MonoBehaviourBase
@@ -17,6 +18,23 @@ public class VehicleState : MonoBehaviourBase
 
     _messageBus.Subscribe<PlayerInRangeEvent>(OnPlayerInRange);
     _messageBus.Subscribe<PlayerOutOfRangeEvent>(OnPlayerOutOfRange);
+    _sceneMessageBus.Subscribe<PlayerActionButtonEvent>(OnPlayerActionButton);
+  }
+
+  private void OnPlayerActionButton(PlayerActionButtonEvent @event)
+  {
+    if (!isPlayerInRange)
+    {
+      LogDebug("Player is not in range.");
+      return;
+    }
+
+    if (!isPlayerInVehicle)
+    {
+      LogDebug("Player is not in vehicle.");
+      isPlayerInVehicle = true;
+      _sceneMessageBus.Publish(new PlayerEnterVehicleEvent());
+    }
   }
 
   private void OnPlayerOutOfRange(PlayerOutOfRangeEvent @event)

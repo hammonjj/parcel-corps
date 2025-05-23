@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,6 +8,7 @@ public class ThirdPersonPlayerInput : MonoBehaviourBase
     [SerializeField] public InputActionReference verticalAction;
     [SerializeField] public InputActionReference horizontalAction;
 
+    private bool _actionsDisabled = false;
     private MessageBus _messageBus;
 
     protected override void Awake()
@@ -19,6 +21,8 @@ public class ThirdPersonPlayerInput : MonoBehaviourBase
         base.OnEnable();
 
         _messageBus = GameObject.FindWithTag("PlayerMessageBus")?.GetComponent<MessageBus>();
+        _sceneMessageBus.Subscribe<PlayerEnterVehicleEvent>(OnPlayerEnterVehicle);
+        _sceneMessageBus.Subscribe<PlayerExitVehicleEvent>(OnPlayerExitVehicle);
 
         if (verticalAction != null)
         {
@@ -37,8 +41,51 @@ public class ThirdPersonPlayerInput : MonoBehaviourBase
         }
     }
 
+    private void OnPlayerExitVehicle(PlayerExitVehicleEvent @event)
+    {
+        EnableActions();
+    }
+
+    private void OnPlayerEnterVehicle(PlayerEnterVehicleEvent @event)
+    {
+        DisableActions();
+    }
+
     protected void OnDisable()
     {
+        DisableActions();
+    }
+
+    private void Update()
+    {
+        if (_actionsDisabled)
+        {
+            return;
+        }
+
+        var playerMovementEvent = new PlayerMovementEvent
+        {
+            VerticalMovement = verticalAction?.action.ReadValue<float>() ?? 0f,
+            HorizontalMovement = horizontalAction?.action.ReadValue<float>() ?? 0f,
+        };
+
+        LogDebug($"Movement event - Vertical: {playerMovementEvent.VerticalMovement}, " +
+            $"Horizontal: {playerMovementEvent.HorizontalMovement}");
+
+        _messageBus?.Publish(playerMovementEvent);
+    }
+
+    private void OnActionAction(InputAction.CallbackContext context)
+    {
+        Debug.Log("Action performed");
+        _sceneMessageBus?.Publish(new PlayerActionButtonEvent { });
+    }
+
+    private void DisableActions()
+    {
+        Debug.Log("Disabling actions");
+        
+        _actionsDisabled = true;
         if (verticalAction != null)
         {
             verticalAction.action.Disable();
@@ -55,23 +102,25 @@ public class ThirdPersonPlayerInput : MonoBehaviourBase
         }
     }
 
-    private void Update()
+    private void EnableActions()
     {
-        var playerMovementEvent = new PlayerMovementEvent
+        Debug.Log("Enabling actions");
+
+        _actionsDisabled = false;
+        if (verticalAction != null)
         {
-            VerticalMovement = verticalAction?.action.ReadValue<float>() ?? 0f,
-            HorizontalMovement = horizontalAction?.action.ReadValue<float>() ?? 0f,
-        };
+            verticalAction.action.Enable();
+        }
 
-        LogDebug($"Movement event - Vertical: {playerMovementEvent.VerticalMovement}, " +
-            $"Horizontal: {playerMovementEvent.HorizontalMovement}");
+        if (horizontalAction != null)
+        {
+            horizontalAction.action.Enable();
+        }
 
-        _messageBus?.Publish(playerMovementEvent);
-    }
-
-    private void OnActionAction(InputAction.CallbackContext context)
-    {
-        Debug.Log("Action performed");
-        _messageBus?.Publish(new PlayerActionButtonEvent { });
+        if (actionAction != null)
+        {
+            actionAction.action.Enable();
+            actionAction.action.performed += OnActionAction;
+        }
     }
 }

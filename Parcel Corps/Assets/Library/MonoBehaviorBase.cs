@@ -20,7 +20,7 @@ public abstract class MonoBehaviourBase : MonoBehaviour {
 
     private string _cachedObjectName;
     private int _debugId;
-    private MessageBus _sceneMessageBus;
+    protected MessageBus _sceneMessageBus;
 
     protected virtual void Awake()
     {

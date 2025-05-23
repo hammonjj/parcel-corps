@@ -6,6 +6,7 @@ TagManager:
   tags:
   - GameLop
   - PlayerMessageBus
+  - SceneMessageBus
   layers:
   - Default
   - TransparentFX
@@ -13,8 +14,8 @@ TagManager:
   - Terrain
   - Water
   - UI
-  - 
-  - 
+  - Player
+  - InteractionTrigger
   - 
   - 
   - 

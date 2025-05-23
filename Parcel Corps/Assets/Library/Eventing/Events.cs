@@ -17,4 +17,8 @@ public struct PlayerExitVehicleEvent { }
 public struct PlayerSteeringEvent
 {
   public float Steering;
-} 
+}
+
+public struct PlayerInRangeEvent { }
+public struct PlayerOutOfRangeEvent { }
+public struct DisableThirdPersonControlsEvent {}

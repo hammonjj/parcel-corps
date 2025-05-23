@@ -7,7 +7,7 @@ public class ThirdPersonPlayerMovement : MonoBehaviourBase
 
     private Vector3 _movement;
     private Rigidbody _rb;
-    private IMessageBus _messageBus;
+    private MessageBus _messageBus;
 
     protected override void Awake()
     {

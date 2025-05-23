@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ThirdPersonPlayerAnimator : MonoBehaviourBase
 {
-  private IMessageBus _messageBus;
+  private MessageBus _messageBus;
   [SerializeField] private Animator _animator;
 
   protected override void Awake()

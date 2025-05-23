@@ -50,7 +50,7 @@ Unsubscribe<T>(Action<T>) – Stop listening.
 
 Publish<T>(T message) – Broadcast a message to all subscribers of T.
 
-You can call these directly on an IMessageBus instance or via the extension methods on GameObject:
+You can call these directly on an MessageBus instance or via the extension methods on GameObject:
 ```csharp
 var bus = myGameObject.GetMessageBus();
 bus.Subscribe<PlayerHitEvent>(OnHit);

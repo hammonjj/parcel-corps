@@ -1,13 +1,14 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class ThirdPersonPlayerInput : MonoBehaviourBase
+public class DrivingPlayerInput : MonoBehaviourBase
 {
     [SerializeField] public InputActionReference actionAction;
-    [SerializeField] public InputActionReference verticalAction;
-    [SerializeField] public InputActionReference horizontalAction;
+    [SerializeField] public InputActionReference steeringAction;
+    [SerializeField] public InputActionReference acceleratorAction;
+    [SerializeField] public InputActionReference brakeAction;
 
-    private IMessageBus _messageBus;
+    private MessageBus _messageBus;
 
     protected override void Awake()
     {
@@ -20,14 +21,14 @@ public class ThirdPersonPlayerInput : MonoBehaviourBase
 
         _messageBus = GameObject.FindWithTag("PlayerMessageBus")?.GetComponent<MessageBus>();
 
-        if (verticalAction != null)
+        if (steeringAction != null)
         {
-            verticalAction.action.Enable();
+            steeringAction.action.Enable();
         }
 
-        if (horizontalAction != null)
+        if (acceleratorAction != null)
         {
-            horizontalAction.action.Enable();
+            acceleratorAction.action.Enable();
         }
 
         if (actionAction != null)
@@ -39,14 +40,14 @@ public class ThirdPersonPlayerInput : MonoBehaviourBase
 
     protected void OnDisable()
     {
-        if (verticalAction != null)
+        if (steeringAction != null)
         {
-            verticalAction.action.Disable();
+            steeringAction.action.Disable();
         }
 
-        if (horizontalAction != null)
+        if (acceleratorAction != null)
         {
-            horizontalAction.action.Disable();
+            acceleratorAction.action.Disable();
         }
 
         if (actionAction != null)
@@ -57,16 +58,14 @@ public class ThirdPersonPlayerInput : MonoBehaviourBase
 
     private void Update()
     {
-        var playerMovementEvent = new PlayerMovementEvent
+        var playerSteeringEvent = new PlayerSteeringEvent
         {
-            VerticalMovement = verticalAction?.action.ReadValue<float>() ?? 0f,
-            HorizontalMovement = horizontalAction?.action.ReadValue<float>() ?? 0f,
+            Steering = steeringAction?.action.ReadValue<float>() ?? 0f
         };
 
-        LogDebug($"Movement event - Vertical: {playerMovementEvent.VerticalMovement}, " +
-            $"Horizontal: {playerMovementEvent.HorizontalMovement}");
+        LogDebug($"Steering event: {playerSteeringEvent.Steering}");
 
-        _messageBus?.Publish(playerMovementEvent);
+        _messageBus?.Publish(playerSteeringEvent);
     }
 
     private void OnActionAction(InputAction.CallbackContext context)

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public static class Utils {
+public static class MathUtils {
 
     public static Vector3 GetVectorFromAngle(float angle) {
         float angleRad = angle * Mathf.Deg2Rad;

@@ -1,14 +1,13 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class DrivingPlayerInput : MonoBehaviourBase
+public class ThirdPersonPlayerInput : MonoBehaviourBase
 {
     [SerializeField] public InputActionReference actionAction;
-    [SerializeField] public InputActionReference steeringAction;
-    [SerializeField] public InputActionReference acceleratorAction;
-    [SerializeField] public InputActionReference brakeAction;
+    [SerializeField] public InputActionReference verticalAction;
+    [SerializeField] public InputActionReference horizontalAction;
 
-    private IMessageBus _messageBus;
+    private MessageBus _messageBus;
 
     protected override void Awake()
     {
@@ -21,14 +20,14 @@ public class DrivingPlayerInput : MonoBehaviourBase
 
         _messageBus = GameObject.FindWithTag("PlayerMessageBus")?.GetComponent<MessageBus>();
 
-        if (steeringAction != null)
+        if (verticalAction != null)
         {
-            steeringAction.action.Enable();
+            verticalAction.action.Enable();
         }
 
-        if (acceleratorAction != null)
+        if (horizontalAction != null)
         {
-            acceleratorAction.action.Enable();
+            horizontalAction.action.Enable();
         }
 
         if (actionAction != null)
@@ -40,14 +39,14 @@ public class DrivingPlayerInput : MonoBehaviourBase
 
     protected void OnDisable()
     {
-        if (steeringAction != null)
+        if (verticalAction != null)
         {
-            steeringAction.action.Disable();
+            verticalAction.action.Disable();
         }
 
-        if (acceleratorAction != null)
+        if (horizontalAction != null)
         {
-            acceleratorAction.action.Disable();
+            horizontalAction.action.Disable();
         }
 
         if (actionAction != null)
@@ -58,14 +57,16 @@ public class DrivingPlayerInput : MonoBehaviourBase
 
     private void Update()
     {
-        var playerSteeringEvent = new PlayerSteeringEvent
+        var playerMovementEvent = new PlayerMovementEvent
         {
-            Steering = steeringAction?.action.ReadValue<float>() ?? 0f
+            VerticalMovement = verticalAction?.action.ReadValue<float>() ?? 0f,
+            HorizontalMovement = horizontalAction?.action.ReadValue<float>() ?? 0f,
         };
 
-        LogDebug($"Steering event: {playerSteeringEvent.Steering}");
+        LogDebug($"Movement event - Vertical: {playerMovementEvent.VerticalMovement}, " +
+            $"Horizontal: {playerMovementEvent.HorizontalMovement}");
 
-        _messageBus?.Publish(playerSteeringEvent);
+        _messageBus?.Publish(playerMovementEvent);
     }
 
     private void OnActionAction(InputAction.CallbackContext context)

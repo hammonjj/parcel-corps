@@ -8,7 +8,7 @@ public class PlayerState : MonoBehaviourBase
         InVehicle
     }
 
-    private IMessageBus _messageBus;
+    private MessageBus _messageBus;
     [SerializeField] private InputState currentState = InputState.ThirdPerson;
 
     protected override void Awake()

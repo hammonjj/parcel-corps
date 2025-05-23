@@ -3,21 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Interface for a message bus that dispatches events of type T to subscribers.
-/// </summary>
-public interface IMessageBus
-{
-    void Subscribe<T>(Action<T> callback);
-    void Unsubscribe<T>(Action<T> callback);
-    void Publish<T>(T message);
-}
-
-/// <summary>
 /// Attach this component to the root of an object tree (e.g., player root).
 /// It manages subscriptions and dispatches messages to all registered listeners.
 /// </summary>
 [DisallowMultipleComponent]
-public class MessageBus : MonoBehaviour, IMessageBus
+public class MessageBus : MonoBehaviour
 {
     private readonly Dictionary<Type, List<Delegate>> _subscribers = new Dictionary<Type, List<Delegate>>();
 
@@ -78,7 +68,7 @@ public static class MessageBusExtensions
     /// <summary>
     /// Finds the nearest MessageBus in this GameObject's parent hierarchy.
     /// </summary>
-    public static IMessageBus GetMessageBus(this GameObject go)
+    public static MessageBus GetMessageBus(this GameObject go)
     {
         return go.GetComponentInParent<MessageBus>();
     }

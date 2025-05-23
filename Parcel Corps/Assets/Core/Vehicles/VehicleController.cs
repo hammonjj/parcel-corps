@@ -7,6 +7,23 @@ public class VehicleController : MonoBehaviourBase
   [SerializeField] private MessageBus _messageBus;
   [SerializeField] private Transform _driverSeat;
 
+  [SerializeField] private WheelCollider _frontLeftWheel;
+  [SerializeField] private WheelCollider _frontRightWheel;
+  [SerializeField] private WheelCollider _rearLeftWheel;
+  [SerializeField] private WheelCollider _rearRightWheel;
+
+  [SerializeField] private Transform _frontLeftTransform;
+  [SerializeField] private Transform _frontRightTransform;
+  [SerializeField] private Transform _rearLeftTransform;
+  [SerializeField] private Transform _rearRightTransform;
+
+  //Convert to scriptable object later
+  [SerializeField] private float _maxMotorTorque = 1500f;
+  [SerializeField] private float _maxSteeringAngle = 30f;
+  [SerializeField] private float _brakeTorque = 3000f;
+  [SerializeField] private float _maxSpeed = 100f;
+  [SerializeField] private float _acceleration = 10f;
+
   protected override void OnEnable()
   {
     base.OnEnable();
@@ -23,6 +40,7 @@ public class VehicleController : MonoBehaviourBase
   private void OnPlayerDriving(PlayerDrivingEvent @event)
   {
     LogDebug("OnPlayerDriving");
+    
   }
 
   private void OnPlayerExitVehicle(PlayerExitVehicleEvent @event)

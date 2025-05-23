@@ -14,6 +14,16 @@ public struct PlayerEnterVehicleEvent { }
 
 public struct PlayerExitVehicleEvent { }
 
+public struct PlayerThrottleEvent
+{
+  public float Throttle;
+}
+
+public struct PlayerBrakeEvent
+{
+  public float Brake;
+}
+
 public struct PlayerSteeringEvent
 {
   public float Steering;

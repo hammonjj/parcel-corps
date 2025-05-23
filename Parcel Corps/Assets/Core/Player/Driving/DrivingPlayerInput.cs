@@ -55,6 +55,18 @@ public class DrivingPlayerInput : MonoBehaviourBase
             Steering = steeringAction?.action.ReadValue<float>() ?? 0f
         };
 
+        var playerThrottleEvent = new PlayerThrottleEvent
+        {
+            Throttle = acceleratorAction?.action.ReadValue<float>() ?? 0f
+        };
+
+        var playerBrakeEvent = new PlayerBrakeEvent
+        {
+            Brake = brakeAction?.action.ReadValue<float>() ?? 0f
+        };
+        
+        _messageBus?.Publish(playerThrottleEvent);
+        _messageBus?.Publish(playerBrakeEvent);
         _messageBus?.Publish(playerSteeringEvent);
     }
 

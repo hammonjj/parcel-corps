@@ -11,7 +11,7 @@ public class InputListener : MonoBehaviourBase
     {
         base.OnEnable();
 
-        SwitchToMap(thirdPersonMap);
+        
         _sceneMessageBus.Subscribe<PlayerEnterVehicleEvent>(OnEnterVehicle);
         _sceneMessageBus.Subscribe<PlayerExitVehicleEvent>(OnExitVehicle);
     }
@@ -22,7 +22,12 @@ public class InputListener : MonoBehaviourBase
         _sceneMessageBus.Unsubscribe<PlayerExitVehicleEvent>(OnExitVehicle);
     }
 
-    private void OnEnterVehicle(PlayerEnterVehicleEvent _)
+  private void Start()
+  {
+    SwitchToMap(thirdPersonMap);
+  }
+
+  private void OnEnterVehicle(PlayerEnterVehicleEvent _)
     {
         SwitchToMap(drivingMap);
         LogDebug("Switched to Driving input map.");

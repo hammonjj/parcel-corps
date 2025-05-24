@@ -10,6 +10,7 @@ public class DrivingPlayerInput : MonoBehaviourBase
     [SerializeField] public InputActionReference acceleratorAction;
     [SerializeField] public InputActionReference brakeAction;
 
+    private ResettableBool _inputDebounce = new();
     private MessageBus _messageBus;
     private MessageBus? _vehicleMessageBus;
 
@@ -37,6 +38,7 @@ public class DrivingPlayerInput : MonoBehaviourBase
 
     private void OnPlayerEnterVehicle(PlayerEnterVehicleEvent @event)
     {
+        _inputDebounce.SetTrue();
         EnableActions();
         _vehicleMessageBus = @event.VehicleMessageBus;
     }
@@ -66,6 +68,13 @@ public class DrivingPlayerInput : MonoBehaviourBase
     private void OnActionAction(InputAction.CallbackContext context)
     {
         Debug.Log("Driving Action Performed");
+
+        if (_inputDebounce.TryConsume())
+        {
+            LogDebug("Input debounce active, ignoring driving action event.");
+            return;
+        }
+
         _sceneMessageBus?.Publish(new PlayerDrivingActionButtonEvent { });
     }
     

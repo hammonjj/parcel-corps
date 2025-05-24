@@ -40,7 +40,7 @@ public class PlayerAnimator : MonoBehaviourBase
 
   protected void OnDisable()
   {
-    _messageBus?.Unsubscribe<PlayerMovementEvent>(OnPlayerMovementEvent);
+    //_messageBus?.Unsubscribe<PlayerMovementEvent>(OnPlayerMovementEvent);
   }
 
   private void OnPlayerMovementEvent(PlayerMovementEvent @event)

@@ -19,6 +19,21 @@ public class VehicleState : MonoBehaviourBase
     _messageBus.Subscribe<PlayerInRangeEvent>(OnPlayerInRange);
     _messageBus.Subscribe<PlayerOutOfRangeEvent>(OnPlayerOutOfRange);
     _sceneMessageBus.Subscribe<PlayerActionButtonEvent>(OnPlayerActionButton);
+    _sceneMessageBus.Subscribe<PlayerDrivingActionButtonEvent>(OnPlayerDrivingActionButton);
+  }
+
+  private void OnPlayerDrivingActionButton(PlayerDrivingActionButtonEvent @event)
+  {
+    LogDebug("Player driving action button pressed.");
+    if (!isPlayerInVehicle)
+    {
+      LogDebug("Player is not in vehicle.");
+      return;
+    }
+    
+    LogDebug("Player is exiting vehicle.");
+    isPlayerInVehicle = false;
+    _sceneMessageBus.Publish(new PlayerExitVehicleEvent());
   }
 
   private void OnPlayerActionButton(PlayerActionButtonEvent @event)

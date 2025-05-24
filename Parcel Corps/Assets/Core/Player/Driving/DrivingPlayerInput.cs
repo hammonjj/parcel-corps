@@ -65,12 +65,13 @@ public class DrivingPlayerInput : MonoBehaviourBase
 
     private void OnActionAction(InputAction.CallbackContext context)
     {
-        Debug.Log("Action performed");
-        _messageBus?.Publish(new PlayerActionButtonEvent { });
+        Debug.Log("Driving Action Performed");
+        _sceneMessageBus?.Publish(new PlayerDrivingActionButtonEvent { });
     }
     
     private void DisableActions()
     {
+        LogDebug("Disabling Driving Actions");
         _actionsDisabled = true;
 
         if (steeringAction != null)
@@ -90,6 +91,7 @@ public class DrivingPlayerInput : MonoBehaviourBase
     }
     private void EnableActions()
     {
+        LogDebug("Enabling Driving Actions");
         _actionsDisabled = false;
 
         if (steeringAction != null)

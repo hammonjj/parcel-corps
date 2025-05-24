@@ -7,7 +7,7 @@ using UnityEngine;
 /// It manages subscriptions and dispatches messages to all registered listeners.
 /// </summary>
 [DisallowMultipleComponent]
-public class MessageBus : MonoBehaviour
+public class MessageBus : MonoBehaviourBase
 {
     private readonly Dictionary<Type, List<Delegate>> _subscribers = new Dictionary<Type, List<Delegate>>();
 
@@ -45,6 +45,8 @@ public class MessageBus : MonoBehaviour
     public void Publish<T>(T message)
     {
         var type = typeof(T);
+
+        LogDebug($"Publishing message of type {type.Name}: {message}");
 
         if (_subscribers.TryGetValue(type, out var list))
         {

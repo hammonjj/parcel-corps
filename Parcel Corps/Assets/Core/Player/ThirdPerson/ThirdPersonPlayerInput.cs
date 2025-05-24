@@ -77,14 +77,14 @@ public class ThirdPersonPlayerInput : MonoBehaviourBase
 
     private void OnActionAction(InputAction.CallbackContext context)
     {
-        Debug.Log("Action performed");
+        LogDebug("Action performed");
         _sceneMessageBus?.Publish(new PlayerActionButtonEvent { });
     }
 
     private void DisableActions()
     {
-        Debug.Log("Disabling actions");
-        
+        LogDebug("Disabling Third Person Actions");
+
         _actionsDisabled = true;
         if (verticalAction != null)
         {
@@ -104,7 +104,7 @@ public class ThirdPersonPlayerInput : MonoBehaviourBase
 
     private void EnableActions()
     {
-        Debug.Log("Enabling actions");
+        Debug.Log("Enabling Third Person Actions");
 
         _actionsDisabled = false;
         if (verticalAction != null)

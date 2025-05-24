@@ -1,4 +1,5 @@
 
+using System;
 using UnityEngine;
 
 public class ThirdPersonPlayerMovement : MonoBehaviourBase
@@ -19,13 +20,42 @@ public class ThirdPersonPlayerMovement : MonoBehaviourBase
         base.OnEnable();
 
         _messageBus = GameObject.FindWithTag("PlayerMessageBus")?.GetComponent<MessageBus>();
-        _messageBus?.Subscribe<PlayerMovementEvent>(OnPlayerMovementEvent);
-        _messageBus?.Subscribe<PlayerActionButtonEvent>(OnPlayerActionEvent);
+        _sceneMessageBus.Subscribe<PlayerEnterVehicleEvent>(OnPlayerEnterVehicle);
+        _sceneMessageBus.Subscribe<PlayerExitVehicleEvent>(OnPlayerExitVehicle);
+        EnableSubscriptions();
 
         if (_rb == null)
         {
             _rb = GetComponent<Rigidbody>();
         }
+    }
+
+  private void OnPlayerExitVehicle(PlayerExitVehicleEvent @event)
+  {
+    EnableSubscriptions();
+  }
+
+  private void OnPlayerEnterVehicle(PlayerEnterVehicleEvent @event)
+  {
+    DisableSubscriptions();
+  }
+
+  private void OnDisable()
+    {
+        DisableSubscriptions();
+    }
+
+    private void EnableSubscriptions()
+    {
+        LogDebug("Enabling player movement subscriptions");
+        _messageBus?.Subscribe<PlayerMovementEvent>(OnPlayerMovementEvent);
+        _messageBus?.Subscribe<PlayerActionButtonEvent>(OnPlayerActionEvent);
+    }
+    private void DisableSubscriptions()
+    {
+        LogDebug("Disabling player movement subscriptions");
+        _messageBus?.Unsubscribe<PlayerMovementEvent>(OnPlayerMovementEvent);
+        _messageBus?.Unsubscribe<PlayerActionButtonEvent>(OnPlayerActionEvent);
     }
 
     private void OnPlayerActionEvent(PlayerActionButtonEvent @event)

@@ -99,7 +99,7 @@ public abstract class MonoBehaviourBase : MonoBehaviour {
 
     private string FormatLog(string level, string msg, string filePath, int line) {
         string fileName = Path.GetFileName(filePath);
-        return $"{fileName}.cs ({line}): [{level}] [{_cachedObjectName}#{_debugId}] {msg}";
+        return $"{fileName} ({line}): [{level}] [{_cachedObjectName}#{_debugId}] {msg}";
     }
 
     protected virtual void OnDrawGizmos() {

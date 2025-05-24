@@ -6,6 +6,7 @@ public class VehicleController : MonoBehaviourBase
   [SerializeField] private VehicleState _vehicleState;
   [SerializeField] private MessageBus _messageBus;
   [SerializeField] private Transform _driverSeat;
+  [SerializeField] private Transform _driverExit;
 
   [SerializeField] private WheelCollider _frontLeftWheel;
   [SerializeField] private WheelCollider _frontRightWheel;
@@ -40,12 +41,22 @@ public class VehicleController : MonoBehaviourBase
   private void OnPlayerDriving(PlayerDrivingEvent @event)
   {
     LogDebug("OnPlayerDriving");
-    
+
   }
 
   private void OnPlayerExitVehicle(PlayerExitVehicleEvent @event)
   {
-    
+    LogDebug("Player exited vehicle.");
+    var player = GameObject.FindWithTag("Player");
+    if (player != null)
+    {
+      player.transform.position = _driverExit.position;
+      player.transform.rotation = _driverExit.rotation;
+    }
+    else
+    {
+      LogError("Player not found");
+    }
   }
 
   private void OnPlayerEnterVehicle(PlayerEnterVehicleEvent @event)

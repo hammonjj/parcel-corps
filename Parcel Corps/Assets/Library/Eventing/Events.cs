@@ -1,4 +1,5 @@
 public struct PlayerActionButtonEvent { }
+public struct PlayerDrivingActionButtonEvent { }
 
 public struct PlayerMovementEvent
 {

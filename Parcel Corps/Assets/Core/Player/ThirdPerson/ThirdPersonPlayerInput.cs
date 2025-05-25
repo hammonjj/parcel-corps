@@ -7,6 +7,7 @@ public class ThirdPersonPlayerInput : MonoBehaviourBase
     [SerializeField] public InputActionReference actionAction;
     [SerializeField] public InputActionReference verticalAction;
     [SerializeField] public InputActionReference horizontalAction;
+    [SerializeField] private PlayerInput _playerInput;
 
     private bool _actionsDisabled = false;
     private MessageBus _messageBus;

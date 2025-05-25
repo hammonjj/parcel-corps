@@ -73,7 +73,15 @@ public class ThirdPersonPlayerMovement : MonoBehaviourBase
         var matrix = Matrix4x4.Rotate(Quaternion.Euler(0, 45, 0));
         var skewedMovement = matrix.MultiplyPoint3x4(movement);
 
-        _rb.MovePosition(_rb.position + skewedMovement * _speed * Time.deltaTime);
+        Vector3 horizontalVel = skewedMovement * _speed;
+        Vector3 newVel = new Vector3(
+            horizontalVel.x,
+            _rb.linearVelocity.y,        // preserve whatever Unity’s gravity has done
+            horizontalVel.z
+        );
+
+        _rb.linearVelocity = newVel;
+        //_rb.MovePosition(_rb.position + skewedMovement * _speed * Time.deltaTime);
 
         // Face movement direction
         if (movement != Vector3.zero)

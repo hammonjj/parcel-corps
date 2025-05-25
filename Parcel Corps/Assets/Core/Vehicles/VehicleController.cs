@@ -25,6 +25,10 @@ public class VehicleController : MonoBehaviourBase
   [SerializeField] private float _maxSpeed = 100f;
   [SerializeField] private float _acceleration = 10f;
 
+  private Rigidbody _playerRb;
+  private Collider  _playerCol;
+  private Transform _playerRoot;
+
   protected override void OnEnable()
   {
     base.OnEnable();
@@ -48,29 +52,50 @@ public class VehicleController : MonoBehaviourBase
   {
     LogDebug("Player exited vehicle.");
     var player = GameObject.FindWithTag("Player");
-    if (player != null)
-    {
-      player.transform.position = _driverExit.position;
-      player.transform.rotation = _driverExit.rotation;
-    }
-    else
+    if(player == null)
     {
       LogError("Player not found");
+      return;
     }
+
+    // 1) Unparent
+    _playerRoot.SetParent(null, worldPositionStays: true);
+
+    // 2) Move to exit marker
+    _playerRoot.position = _driverExit.position;
+    _playerRoot.rotation = _driverExit.rotation;
+
+    // 3) Restore physics
+    _playerRb.isKinematic = false;
+    _playerRb.detectCollisions = true;
+    _playerCol.enabled = true;
   }
 
   private void OnPlayerEnterVehicle(PlayerEnterVehicleEvent @event)
   {
     LogDebug("Player entered vehicle.");
     var player = GameObject.FindWithTag("Player");
-    if (player != null)
-    {
-      player.transform.position = _driverSeat.position;
-      player.transform.rotation = _driverSeat.rotation;
-    }
-    else
+    if (player == null)
     {
       LogError("Player not found");
+      return;
     }
+
+    // 1) Cache references
+    _playerRoot = player.transform;
+    _playerRb   = player.GetComponent<Rigidbody>();
+    _playerCol  = player.GetComponent<Collider>();
+
+    // 2) Take them out of physics
+    _playerRb.isKinematic = true;
+    _playerRb.detectCollisions = false;
+    _playerCol.enabled = false;
+
+    // 3) Snap them into the seat
+    _playerRoot.position = _driverSeat.position;
+    _playerRoot.rotation = _driverSeat.rotation;
+
+    // 4) Parent so they ride along
+    _playerRoot.SetParent(_driverSeat, worldPositionStays: true);
   }
 }

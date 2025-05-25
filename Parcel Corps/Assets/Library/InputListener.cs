@@ -11,7 +11,6 @@ public class InputListener : MonoBehaviourBase
     {
         base.OnEnable();
 
-        
         _sceneMessageBus.Subscribe<PlayerEnterVehicleEvent>(OnEnterVehicle);
         _sceneMessageBus.Subscribe<PlayerExitVehicleEvent>(OnExitVehicle);
     }

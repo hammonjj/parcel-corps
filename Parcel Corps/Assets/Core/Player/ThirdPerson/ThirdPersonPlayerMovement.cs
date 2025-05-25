@@ -6,6 +6,7 @@ public class ThirdPersonPlayerMovement : MonoBehaviourBase
 {
     [SerializeField] private float _speed = 5f;
 
+    private bool _actionsDisabled = false;
     private Vector3 _movement;
     private Rigidbody _rb;
     private MessageBus _messageBus;
@@ -47,12 +48,14 @@ public class ThirdPersonPlayerMovement : MonoBehaviourBase
 
     private void EnableSubscriptions()
     {
+        _actionsDisabled = false;
         LogDebug("Enabling player movement subscriptions");
         _messageBus?.Subscribe<PlayerMovementEvent>(OnPlayerMovementEvent);
         _messageBus?.Subscribe<PlayerActionButtonEvent>(OnPlayerActionEvent);
     }
     private void DisableSubscriptions()
     {
+        _actionsDisabled = true;
         LogDebug("Disabling player movement subscriptions");
         _messageBus?.Unsubscribe<PlayerMovementEvent>(OnPlayerMovementEvent);
         _messageBus?.Unsubscribe<PlayerActionButtonEvent>(OnPlayerActionEvent);
@@ -73,15 +76,14 @@ public class ThirdPersonPlayerMovement : MonoBehaviourBase
         var matrix = Matrix4x4.Rotate(Quaternion.Euler(0, 45, 0));
         var skewedMovement = matrix.MultiplyPoint3x4(movement);
 
-        Vector3 horizontalVel = skewedMovement * _speed;
-        Vector3 newVel = new Vector3(
+        var horizontalVel = skewedMovement * _speed;
+        var newVel = new Vector3(
             horizontalVel.x,
-            _rb.linearVelocity.y,        // preserve whatever Unity’s gravity has done
+            _rb.linearVelocity.y,
             horizontalVel.z
         );
 
         _rb.linearVelocity = newVel;
-        //_rb.MovePosition(_rb.position + skewedMovement * _speed * Time.deltaTime);
 
         // Face movement direction
         if (movement != Vector3.zero)
@@ -93,6 +95,11 @@ public class ThirdPersonPlayerMovement : MonoBehaviourBase
 
     private void FixedUpdate()
     {
+        if (_actionsDisabled)
+        {
+            return;
+        }
+        
         Move(_movement);
     }
 }

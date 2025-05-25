@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 public class VehicleController : MonoBehaviourBase
-{    
+{
   [SerializeField] private VehicleState _vehicleState;
   [SerializeField] private MessageBus _messageBus;
   [SerializeField] private Transform _driverSeat;
@@ -26,8 +26,12 @@ public class VehicleController : MonoBehaviourBase
   [SerializeField] private float _acceleration = 10f;
 
   private Rigidbody _playerRb;
-  private Collider  _playerCol;
+  private Collider _playerCol;
   private Transform _playerRoot;
+
+  private float _steering;
+  private float _throttle;
+  private float _brake;
 
   protected override void OnEnable()
   {
@@ -45,14 +49,16 @@ public class VehicleController : MonoBehaviourBase
   private void OnPlayerDriving(PlayerDrivingEvent @event)
   {
     LogDebug("OnPlayerDriving");
-
+    _steering = @event.Steering;
+    _throttle = @event.Throttle;
+    _brake = @event.Brake;
   }
 
   private void OnPlayerExitVehicle(PlayerExitVehicleEvent @event)
   {
     LogDebug("Player exited vehicle.");
     var player = GameObject.FindWithTag("Player");
-    if(player == null)
+    if (player == null)
     {
       LogError("Player not found");
       return;
@@ -83,8 +89,8 @@ public class VehicleController : MonoBehaviourBase
 
     // 1) Cache references
     _playerRoot = player.transform;
-    _playerRb   = player.GetComponent<Rigidbody>();
-    _playerCol  = player.GetComponent<Collider>();
+    _playerRb = player.GetComponent<Rigidbody>();
+    _playerCol = player.GetComponent<Collider>();
 
     // 2) Take them out of physics
     _playerRb.isKinematic = true;
@@ -97,5 +103,45 @@ public class VehicleController : MonoBehaviourBase
 
     // 4) Parent so they ride along
     _playerRoot.SetParent(_driverSeat, worldPositionStays: true);
+  }
+
+  private void ApplySteering()
+  {
+    var steer = _steering * _maxSteeringAngle;
+    _frontLeftWheel.steerAngle = steer;
+    _frontRightWheel.steerAngle = steer;
+  }
+
+  private void ApplyTorque()
+  {
+    float motorTorque = _throttle * _maxMotorTorque;
+    _frontLeftWheel.motorTorque = motorTorque;
+    _frontRightWheel.motorTorque = motorTorque;
+  }
+
+  //I need to break the wheels out into their own gameobjects via blender before this will work
+  private void ApplyBrake()
+  {
+    if (_brake > 0f)
+    {
+      _frontLeftWheel.brakeTorque = _brake * _brakeTorque;
+      _frontRightWheel.brakeTorque = _brake * _brakeTorque;
+      _rearLeftWheel.brakeTorque = _brake * _brakeTorque;
+      _rearRightWheel.brakeTorque = _brake * _brakeTorque;
+    }
+    else
+    {
+      _frontLeftWheel.brakeTorque = 0f;
+      _frontRightWheel.brakeTorque = 0f;
+      _rearLeftWheel.brakeTorque = 0f;
+      _rearRightWheel.brakeTorque = 0f;
+    }
+  }
+
+  private void FixedUpdate()
+  {
+    ApplySteering();
+    ApplyTorque();
+    //ApplyBrake();
   }
 }

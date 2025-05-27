@@ -28,6 +28,13 @@ public struct PlayerVehicleSeatEvent
   public bool isDriver;
 }
 
+public struct VehicleGunAimEvent
+{
+  public float HorizontalInput;
+}
+
+public struct PlayerGunFireEvent { }
+
 public struct PlayerInRangeEvent { }
 public struct PlayerOutOfRangeEvent { }
 public struct DisableThirdPersonControlsEvent {}

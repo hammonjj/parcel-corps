@@ -308,6 +308,96 @@ public partial class @PlayerActionMap: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 }
             ]
+        },
+        {
+            ""name"": ""Riding"",
+            ""id"": ""4fde354a-05c9-46db-98b3-dbb4dd06a1f3"",
+            ""actions"": [
+                {
+                    ""name"": ""Horizontal"",
+                    ""type"": ""Button"",
+                    ""id"": ""3d302ee4-e083-40d3-9b87-a05b7d15e7d0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Fire"",
+                    ""type"": ""Button"",
+                    ""id"": ""b60f9acd-4de3-42a7-bbd2-630a9783be2c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Action"",
+                    ""type"": ""Button"",
+                    ""id"": ""033d1090-7a81-4b4f-99d9-8ca6dbe54f28"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""1897afaa-22d6-4a49-b270-843f45b956a9"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Horizontal"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""c4f49d5a-b20b-43d7-a784-5c6125fe08a5"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Horizontal"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""8b33dafd-d96e-4b66-9e30-ae3e8dd93551"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Horizontal"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6251ebd6-ca12-4d94-8ed1-ab29b8c4784c"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""46463adc-de54-4cc4-bf54-85e59c1e4120"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -323,12 +413,18 @@ public partial class @PlayerActionMap: IInputActionCollection2, IDisposable
         m_ThirdPerson_Action = m_ThirdPerson.FindAction("Action", throwIfNotFound: true);
         m_ThirdPerson_Horizontal = m_ThirdPerson.FindAction("Horizontal", throwIfNotFound: true);
         m_ThirdPerson_Vertical = m_ThirdPerson.FindAction("Vertical", throwIfNotFound: true);
+        // Riding
+        m_Riding = asset.FindActionMap("Riding", throwIfNotFound: true);
+        m_Riding_Horizontal = m_Riding.FindAction("Horizontal", throwIfNotFound: true);
+        m_Riding_Fire = m_Riding.FindAction("Fire", throwIfNotFound: true);
+        m_Riding_Action = m_Riding.FindAction("Action", throwIfNotFound: true);
     }
 
     ~@PlayerActionMap()
     {
         UnityEngine.Debug.Assert(!m_Driving.enabled, "This will cause a leak and performance issues, PlayerActionMap.Driving.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_ThirdPerson.enabled, "This will cause a leak and performance issues, PlayerActionMap.ThirdPerson.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Riding.enabled, "This will cause a leak and performance issues, PlayerActionMap.Riding.Disable() has not been called.");
     }
 
     /// <summary>
@@ -647,6 +743,124 @@ public partial class @PlayerActionMap: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="ThirdPersonActions" /> instance referencing this action map.
     /// </summary>
     public ThirdPersonActions @ThirdPerson => new ThirdPersonActions(this);
+
+    // Riding
+    private readonly InputActionMap m_Riding;
+    private List<IRidingActions> m_RidingActionsCallbackInterfaces = new List<IRidingActions>();
+    private readonly InputAction m_Riding_Horizontal;
+    private readonly InputAction m_Riding_Fire;
+    private readonly InputAction m_Riding_Action;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Riding".
+    /// </summary>
+    public struct RidingActions
+    {
+        private @PlayerActionMap m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public RidingActions(@PlayerActionMap wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Riding/Horizontal".
+        /// </summary>
+        public InputAction @Horizontal => m_Wrapper.m_Riding_Horizontal;
+        /// <summary>
+        /// Provides access to the underlying input action "Riding/Fire".
+        /// </summary>
+        public InputAction @Fire => m_Wrapper.m_Riding_Fire;
+        /// <summary>
+        /// Provides access to the underlying input action "Riding/Action".
+        /// </summary>
+        public InputAction @Action => m_Wrapper.m_Riding_Action;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Riding; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="RidingActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(RidingActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="RidingActions" />
+        public void AddCallbacks(IRidingActions instance)
+        {
+            if (instance == null || m_Wrapper.m_RidingActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_RidingActionsCallbackInterfaces.Add(instance);
+            @Horizontal.started += instance.OnHorizontal;
+            @Horizontal.performed += instance.OnHorizontal;
+            @Horizontal.canceled += instance.OnHorizontal;
+            @Fire.started += instance.OnFire;
+            @Fire.performed += instance.OnFire;
+            @Fire.canceled += instance.OnFire;
+            @Action.started += instance.OnAction;
+            @Action.performed += instance.OnAction;
+            @Action.canceled += instance.OnAction;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="RidingActions" />
+        private void UnregisterCallbacks(IRidingActions instance)
+        {
+            @Horizontal.started -= instance.OnHorizontal;
+            @Horizontal.performed -= instance.OnHorizontal;
+            @Horizontal.canceled -= instance.OnHorizontal;
+            @Fire.started -= instance.OnFire;
+            @Fire.performed -= instance.OnFire;
+            @Fire.canceled -= instance.OnFire;
+            @Action.started -= instance.OnAction;
+            @Action.performed -= instance.OnAction;
+            @Action.canceled -= instance.OnAction;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="RidingActions.UnregisterCallbacks(IRidingActions)" />.
+        /// </summary>
+        /// <seealso cref="RidingActions.UnregisterCallbacks(IRidingActions)" />
+        public void RemoveCallbacks(IRidingActions instance)
+        {
+            if (m_Wrapper.m_RidingActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="RidingActions.AddCallbacks(IRidingActions)" />
+        /// <seealso cref="RidingActions.RemoveCallbacks(IRidingActions)" />
+        /// <seealso cref="RidingActions.UnregisterCallbacks(IRidingActions)" />
+        public void SetCallbacks(IRidingActions instance)
+        {
+            foreach (var item in m_Wrapper.m_RidingActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_RidingActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="RidingActions" /> instance referencing this action map.
+    /// </summary>
+    public RidingActions @Riding => new RidingActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Driving" which allows adding and removing callbacks.
     /// </summary>
@@ -711,5 +925,34 @@ public partial class @PlayerActionMap: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnVertical(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Riding" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="RidingActions.AddCallbacks(IRidingActions)" />
+    /// <seealso cref="RidingActions.RemoveCallbacks(IRidingActions)" />
+    public interface IRidingActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Horizontal" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnHorizontal(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Fire" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnFire(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Action" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnAction(InputAction.CallbackContext context);
     }
 }

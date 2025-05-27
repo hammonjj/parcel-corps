@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,6 +7,7 @@ public class InputListener : MonoBehaviourBase
     [SerializeField] private InputActionAsset _inputAsset;
     [SerializeField] private string thirdPersonMap = "ThirdPerson";
     [SerializeField] private string drivingMap = "Driving";
+    [SerializeField] private string ridingMap = "Riding";
 
     protected override void OnEnable()
     {
@@ -13,18 +15,25 @@ public class InputListener : MonoBehaviourBase
 
         _sceneMessageBus.Subscribe<PlayerEnterVehicleEvent>(OnEnterVehicle);
         _sceneMessageBus.Subscribe<PlayerExitVehicleEvent>(OnExitVehicle);
+        _sceneMessageBus.Subscribe<PlayerVehicleSeatEvent>(OnVehicleSeat);
+    }
+
+    private void OnVehicleSeat(PlayerVehicleSeatEvent @event)
+    {
+            SwitchToMap(ridingMap);
     }
 
     protected void OnDisable()
     {
         _sceneMessageBus.Unsubscribe<PlayerEnterVehicleEvent>(OnEnterVehicle);
         _sceneMessageBus.Unsubscribe<PlayerExitVehicleEvent>(OnExitVehicle);
+        _sceneMessageBus.Unsubscribe<PlayerVehicleSeatEvent>(OnVehicleSeat);
     }
 
-  private void Start()
-  {
-    SwitchToMap(thirdPersonMap);
-  }
+    private void Start()
+    {
+        SwitchToMap(thirdPersonMap);
+    }
 
   private void OnEnterVehicle(PlayerEnterVehicleEvent _)
     {

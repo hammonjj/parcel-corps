@@ -1,13 +1,17 @@
-using System;
 using UnityEngine;
 
 public class VehicleController : MonoBehaviourBase
 {
+  [Header("Vehicle Transforms")]
   [SerializeField] private VehicleState _vehicleState;
   [SerializeField] private MessageBus _messageBus;
   [SerializeField] private Transform _driverSeat;
   [SerializeField] private Transform _driverExit;
 
+  [SerializeField] private Transform[] _loadingPoints;
+  [SerializeField] private Transform[] _ridingPoints;
+
+  [Header("Wheels")]
   [SerializeField] private WheelCollider _frontLeftWheel;
   [SerializeField] private WheelCollider _frontRightWheel;
   [SerializeField] private WheelCollider _rearLeftWheel;
@@ -19,6 +23,7 @@ public class VehicleController : MonoBehaviourBase
   [SerializeField] private Transform _rearRightTransform;
 
   //Convert to scriptable object later
+  [Header("Vehicle Settings")]
   [SerializeField] private float _maxMotorTorque = 1500f;
   [SerializeField] private float _maxSteeringAngle = 30f;
   [SerializeField] private float _brakeTorque = 3000f;
@@ -98,11 +103,19 @@ public class VehicleController : MonoBehaviourBase
     _playerCol.enabled = false;
 
     // 3) Snap them into the seat
-    _playerRoot.position = _driverSeat.position;
-    _playerRoot.rotation = _driverSeat.rotation;
+    var closestIndex = GameObjectUtils.FindClosestTransformIndex(_playerRoot, _loadingPoints);
+    
+    _playerRoot.position = _ridingPoints[closestIndex].position;
+    _playerRoot.rotation = _ridingPoints[closestIndex].rotation;
 
     // 4) Parent so they ride along
-    _playerRoot.SetParent(_driverSeat, worldPositionStays: true);
+    _playerRoot.SetParent(_ridingPoints[closestIndex], worldPositionStays: true);
+
+    _messageBus.Publish(new PlayerVehicleSeatEvent {
+      Row = closestIndex / 2,
+      isPassenger = closestIndex != 0,
+      isDriver = closestIndex == 0
+    });
   }
 
   private void ApplySteering()

@@ -21,6 +21,13 @@ public struct PlayerDrivingEvent
   public float Steering;
 }
 
+public struct PlayerVehicleSeatEvent
+{
+  public int Row;
+  public bool isPassenger;
+  public bool isDriver;
+}
+
 public struct PlayerInRangeEvent { }
 public struct PlayerOutOfRangeEvent { }
 public struct DisableThirdPersonControlsEvent {}

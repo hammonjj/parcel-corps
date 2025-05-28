@@ -25,6 +25,12 @@ public class SeatController : MonoBehaviourBase
             _currentYaw = 0f; // Reset yaw when player enters seat
         }
 
+        if (gunPivot != null)
+        {
+            LogDebug($"Setting gun pivot rotation for row {row}, isPassenger: {isPassenger}");
+            gunPivot.localRotation = Quaternion.Euler(0f, -90f, 0f);
+        }
+
         _sceneMessageBus.Publish(new PlayerVehicleSeatEvent
         {
             Row = row,
@@ -46,10 +52,10 @@ public class SeatController : MonoBehaviourBase
         vehicleMessageBus.Subscribe<PlayerVehicleSeatEvent>(OnSeatEvent);
     }
 
-  private void OnSeatEvent(PlayerVehicleSeatEvent @event)
-  {
-    
-  }
+    private void OnSeatEvent(PlayerVehicleSeatEvent @event)
+    {
+        
+    }
 
   protected void OnDisable()
     {
@@ -71,7 +77,8 @@ public class SeatController : MonoBehaviourBase
         float delta = _targetInput * aimSpeed * Time.deltaTime;
         _currentYaw = Mathf.Clamp(_currentYaw + delta, -maxArcAngle, maxArcAngle);
 
-        gunPivot.localRotation = Quaternion.Euler(0f, _currentYaw, 0f);
+        //gunPivot.localRotation = Quaternion.Euler(0f, _currentYaw, 0f);
+        gunPivot.localRotation = Quaternion.Euler(0f, _currentYaw - 90f, 0f);
     }
 
     protected override void DrawGizmosSafe()
@@ -82,13 +89,13 @@ public class SeatController : MonoBehaviourBase
         }
 
         Vector3 origin = gunPivot.position;
-        Vector3 forward = transform.forward;
+        Vector3 forward = Quaternion.Euler(0f, -90f, 0f) * transform.forward;
 
         Gizmos.color = Color.green;
         DrawArc(origin, forward, maxArcAngle, 2f);
 
         Gizmos.color = Color.red;
-        Vector3 aimDir = Quaternion.Euler(0f, _currentYaw, 0f) * transform.forward;
+        Vector3 aimDir = Quaternion.Euler(0f, _currentYaw - 90f, 0f) * transform.forward;
         Gizmos.DrawLine(origin, origin + aimDir * aimLineLength);
     }
 

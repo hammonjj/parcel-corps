@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class SeatController : MonoBehaviourBase
@@ -6,6 +7,10 @@ public class SeatController : MonoBehaviourBase
     [SerializeField] private float aimSpeed = 90f;
     [SerializeField] private float maxArcAngle = 90f;
     [SerializeField] private float aimLineLength = 3f;
+    [SerializeField] private MessageBus vehicleMessageBus;
+
+    [SerializeField] private int row;
+    [SerializeField] private bool isPassenger;
 
     private bool _isPlayerInSeat = false;
     private float _currentYaw;
@@ -13,20 +18,40 @@ public class SeatController : MonoBehaviourBase
 
     public void SetPlayerInSeat(bool isInSeat)
     {
+        LogDebug($"SetPlayerInSeat: {isInSeat} for row {row}, isPassenger: {isPassenger}");
         _isPlayerInSeat = isInSeat;
         if (_isPlayerInSeat)
         {
             _currentYaw = 0f; // Reset yaw when player enters seat
         }
+
+        _sceneMessageBus.Publish(new PlayerVehicleSeatEvent
+        {
+            Row = row,
+            isPassenger = isPassenger,
+            isDriver = row == 0 && !isPassenger,
+            VehicleMessageBus = vehicleMessageBus
+        });
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
     }
 
     protected override void OnEnable()
     {
         base.OnEnable();
         _sceneMessageBus.Subscribe<VehicleGunAimEvent>(OnGunAim);
+        vehicleMessageBus.Subscribe<PlayerVehicleSeatEvent>(OnSeatEvent);
     }
 
-    protected void OnDisable()
+  private void OnSeatEvent(PlayerVehicleSeatEvent @event)
+  {
+    
+  }
+
+  protected void OnDisable()
     {
         _sceneMessageBus.Unsubscribe<VehicleGunAimEvent>(OnGunAim);
     }
@@ -51,7 +76,7 @@ public class SeatController : MonoBehaviourBase
 
     protected override void DrawGizmosSafe()
     {
-        if (showGizmos == false || gunPivot == null)
+        if (showGizmos == false || gunPivot == null || (row != 0 && isPassenger))
         {
             return;
         }
@@ -72,12 +97,12 @@ public class SeatController : MonoBehaviourBase
         int segments = 30;
         float deltaAngle = angle * 2f / segments;
         Quaternion startRot = Quaternion.Euler(0f, -angle, 0f);
-        Vector3 prevPoint = center + (startRot * forward) * radius;
+        Vector3 prevPoint = center + startRot * forward * radius;
 
         for (int i = 1; i <= segments; i++)
         {
             Quaternion rot = Quaternion.Euler(0f, -angle + deltaAngle * i, 0f);
-            Vector3 nextPoint = center + (rot * forward) * radius;
+            Vector3 nextPoint = center + rot * forward * radius;
             Gizmos.DrawLine(prevPoint, nextPoint);
             prevPoint = nextPoint;
         }

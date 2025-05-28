@@ -23,7 +23,7 @@ public class DrivingPlayerInput : MonoBehaviourBase
         base.OnEnable();
 
         _messageBus = GameObject.FindWithTag("PlayerMessageBus")?.GetComponent<MessageBus>();
-        _sceneMessageBus.Subscribe<PlayerEnterVehicleEvent>(OnPlayerEnterVehicle);
+        _sceneMessageBus.Subscribe<PlayerVehicleSeatEvent>(OnPlayerEnterVehicle);
         _sceneMessageBus.Subscribe<PlayerExitVehicleEvent>(OnPlayerExitVehicle);
 
         DisableActions();
@@ -35,8 +35,15 @@ public class DrivingPlayerInput : MonoBehaviourBase
         _vehicleMessageBus = null;
     }
 
-    private void OnPlayerEnterVehicle(PlayerEnterVehicleEvent @event)
+    private void OnPlayerEnterVehicle(PlayerVehicleSeatEvent @event)
     {
+        if(!@event.isDriver)
+        {
+            LogDebug("Not a driver, disabling driving actions.");
+            DisableActions();
+            return;
+        }
+        
         _inputDebounce.SetTrue();
         EnableActions();
         _vehicleMessageBus = @event.VehicleMessageBus;

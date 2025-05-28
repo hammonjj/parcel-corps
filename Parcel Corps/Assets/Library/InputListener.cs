@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,15 +11,10 @@ public class InputListener : MonoBehaviourBase
     protected override void OnEnable()
     {
         base.OnEnable();
-
+        LogDebug("InputListener enabled.");
         _sceneMessageBus.Subscribe<PlayerEnterVehicleEvent>(OnEnterVehicle);
         _sceneMessageBus.Subscribe<PlayerExitVehicleEvent>(OnExitVehicle);
         _sceneMessageBus.Subscribe<PlayerVehicleSeatEvent>(OnVehicleSeat);
-    }
-
-    private void OnVehicleSeat(PlayerVehicleSeatEvent @event)
-    {
-            SwitchToMap(ridingMap);
     }
 
     protected void OnDisable()
@@ -32,13 +26,21 @@ public class InputListener : MonoBehaviourBase
 
     private void Start()
     {
+        LogDebug("InputListener started.");
         SwitchToMap(thirdPersonMap);
     }
 
-  private void OnEnterVehicle(PlayerEnterVehicleEvent _)
+    private void OnVehicleSeat(PlayerVehicleSeatEvent @event)
     {
-        SwitchToMap(drivingMap);
-        LogDebug("Switched to Driving input map.");
+        SwitchToMap(@event.isDriver ? drivingMap : ridingMap);
+        LogDebug($"Switched to Riding input map for row {@event.Row}, " +
+            $"isPassenger: {@event.isPassenger}, isDriver: {@event.isDriver}");
+    }
+
+    private void OnEnterVehicle(PlayerEnterVehicleEvent _)
+    {
+        //SwitchToMap(drivingMap);
+        //LogDebug("Switched to Driving input map.");
     }
 
     private void OnExitVehicle(PlayerExitVehicleEvent _)
@@ -48,7 +50,7 @@ public class InputListener : MonoBehaviourBase
     }
 
     private void SwitchToMap(string mapName)
-    {
+    {   
         foreach (var map in _inputAsset.actionMaps)
         {
             if (map.name == mapName) { map.Enable(); }

@@ -26,6 +26,7 @@ public struct PlayerVehicleSeatEvent
   public int Row;
   public bool isPassenger;
   public bool isDriver;
+  public MessageBus VehicleMessageBus;
 }
 
 public struct VehicleGunAimEvent

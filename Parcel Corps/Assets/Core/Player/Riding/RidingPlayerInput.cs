@@ -13,14 +13,21 @@ public class RidingPlayerInput : MonoBehaviourBase
     {
         base.OnEnable();
 
-        _sceneMessageBus.Subscribe<PlayerEnterVehicleEvent>(OnEnterVehicle);
+        _sceneMessageBus.Subscribe<PlayerVehicleSeatEvent>(OnVehicleSeat);
         _sceneMessageBus.Subscribe<PlayerExitVehicleEvent>(OnExitVehicle);
 
         DisableActions();
     }
 
-    private void OnEnterVehicle(PlayerEnterVehicleEvent evt)
+    private void OnVehicleSeat(PlayerVehicleSeatEvent evt)
     {
+        if(evt.isDriver)
+        {
+            LogDebug("Not a passenger, disabling riding actions.");
+            DisableActions();
+            return;
+        }
+
         _vehicleMessageBus = evt.VehicleMessageBus;
         EnableActions();
     }
@@ -52,6 +59,8 @@ public class RidingPlayerInput : MonoBehaviourBase
         {
             return;
         }
+
+        LogDebug("Firing gun from riding input.");
 
         _vehicleMessageBus?.Publish(new PlayerGunFireEvent());
     }

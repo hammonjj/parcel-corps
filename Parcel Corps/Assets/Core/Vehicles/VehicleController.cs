@@ -102,7 +102,7 @@ public class VehicleController : MonoBehaviourBase
     _playerRb.detectCollisions = false;
     _playerCol.enabled = false;
 
-    // 3) Snap them into the seat
+    // 3) Snap them into the seat -> Might want to move this to the SeatController and move the driving piece there as well
     var closestIndex = GameObjectUtils.FindClosestTransformIndex(_playerRoot, _loadingPoints);
     
     _playerRoot.position = _ridingPoints[closestIndex].position;
@@ -111,11 +111,12 @@ public class VehicleController : MonoBehaviourBase
     // 4) Parent so they ride along
     _playerRoot.SetParent(_ridingPoints[closestIndex], worldPositionStays: true);
 
-    _messageBus.Publish(new PlayerVehicleSeatEvent {
-      Row = closestIndex / 2,
-      isPassenger = closestIndex != 0,
-      isDriver = closestIndex == 0
-    });
+    _ridingPoints[closestIndex].gameObject.GetComponent<SeatController>()?.SetPlayerInSeat(true);
+    // _messageBus.Publish(new PlayerVehicleSeatEvent {
+    //   Row = closestIndex / 2,
+    //   isPassenger = closestIndex != 0,
+    //   isDriver = closestIndex == 0
+    // });
   }
 
   private void ApplySteering()

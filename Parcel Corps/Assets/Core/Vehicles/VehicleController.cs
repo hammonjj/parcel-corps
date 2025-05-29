@@ -133,7 +133,6 @@ public class VehicleController : MonoBehaviourBase
     _frontRightWheel.motorTorque = motorTorque;
   }
 
-  //I need to break the wheels out into their own gameobjects via blender before this will work
   private void ApplyBrake()
   {
     if (_brake > 0f)
@@ -156,6 +155,6 @@ public class VehicleController : MonoBehaviourBase
   {
     ApplySteering();
     ApplyTorque();
-    //ApplyBrake();
+    ApplyBrake();
   }
 }

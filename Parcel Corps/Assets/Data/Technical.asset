@@ -9,10 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: badbe3a864659435fb2e14e025063a71, type: 3}
-  m_Name: BaseVan
+  m_Script: {fileID: 11500000, guid: f0847361483de4328bf3fc16f14bc301, type: 3}
+  m_Name: Technical
   m_EditorClassIdentifier: 
-  maxSpeed: 15
-  acceleration: 25
-  brakeForce: 40
-  turnRate: 90
+  vehicleName: Technical
+  maxMotorTorque: 1500
+  maxSteeringAngle: 30
+  brakeTorque: 3000
+  maxSpeed: 100

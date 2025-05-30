@@ -24,11 +24,7 @@ public class VehicleController : MonoBehaviourBase
 
   //Convert to scriptable object later
   [Header("Vehicle Settings")]
-  [SerializeField] private float _maxMotorTorque = 1500f;
-  [SerializeField] private float _maxSteeringAngle = 30f;
-  [SerializeField] private float _brakeTorque = 3000f;
-  [SerializeField] private float _maxSpeed = 100f;
-  [SerializeField] private float _acceleration = 10f;
+  [SerializeField] private BaseVehicleData _vehicleData;
 
   private Rigidbody _playerRb;
   private Collider _playerCol;
@@ -112,23 +108,18 @@ public class VehicleController : MonoBehaviourBase
     _playerRoot.SetParent(_ridingPoints[closestIndex], worldPositionStays: true);
 
     _ridingPoints[closestIndex].gameObject.GetComponent<SeatController>()?.SetPlayerInSeat(true);
-    // _messageBus.Publish(new PlayerVehicleSeatEvent {
-    //   Row = closestIndex / 2,
-    //   isPassenger = closestIndex != 0,
-    //   isDriver = closestIndex == 0
-    // });
   }
 
   private void ApplySteering()
   {
-    var steer = _steering * _maxSteeringAngle;
+    var steer = _steering * _vehicleData.maxSteeringAngle;
     _frontLeftWheel.steerAngle = steer;
     _frontRightWheel.steerAngle = steer;
   }
 
   private void ApplyTorque()
   {
-    float motorTorque = _throttle * _maxMotorTorque;
+    float motorTorque = _throttle * _vehicleData.maxMotorTorque;
     _frontLeftWheel.motorTorque = motorTorque;
     _frontRightWheel.motorTorque = motorTorque;
   }
@@ -137,10 +128,10 @@ public class VehicleController : MonoBehaviourBase
   {
     if (_brake > 0f)
     {
-      _frontLeftWheel.brakeTorque = _brake * _brakeTorque;
-      _frontRightWheel.brakeTorque = _brake * _brakeTorque;
-      _rearLeftWheel.brakeTorque = _brake * _brakeTorque;
-      _rearRightWheel.brakeTorque = _brake * _brakeTorque;
+      _frontLeftWheel.brakeTorque = _brake * _vehicleData.brakeTorque;
+      _frontRightWheel.brakeTorque = _brake * _vehicleData.brakeTorque;
+      _rearLeftWheel.brakeTorque = _brake * _vehicleData.brakeTorque;
+      _rearRightWheel.brakeTorque = _brake * _vehicleData.brakeTorque;
     }
     else
     {

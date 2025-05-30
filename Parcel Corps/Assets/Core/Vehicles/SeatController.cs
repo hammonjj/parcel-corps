@@ -9,8 +9,8 @@ public class SeatController : MonoBehaviourBase
     [SerializeField] private float aimLineLength = 3f;
     [SerializeField] private MessageBus vehicleMessageBus;
 
-    [SerializeField] private int row;
-    [SerializeField] private bool isPassenger;
+    [SerializeField] private int _row;
+    [SerializeField] private bool _isPassenger;
 
     private bool _isPlayerInSeat = false;
     private float _currentYaw;
@@ -18,7 +18,7 @@ public class SeatController : MonoBehaviourBase
 
     public void SetPlayerInSeat(bool isInSeat)
     {
-        LogDebug($"SetPlayerInSeat: {isInSeat} for row {row}, isPassenger: {isPassenger}");
+        LogDebug($"SetPlayerInSeat: {isInSeat} for row {_row}, isPassenger: {_isPassenger}");
         _isPlayerInSeat = isInSeat;
         if (_isPlayerInSeat)
         {
@@ -27,15 +27,15 @@ public class SeatController : MonoBehaviourBase
 
         if (gunPivot != null)
         {
-            LogDebug($"Setting gun pivot rotation for row {row}, isPassenger: {isPassenger}");
+            LogDebug($"Setting gun pivot rotation for row {_row}, isPassenger: {_isPassenger}");
             gunPivot.localRotation = Quaternion.Euler(0f, -90f, 0f);
         }
 
         _sceneMessageBus.Publish(new PlayerVehicleSeatEvent
         {
-            Row = row,
-            isPassenger = isPassenger,
-            isDriver = row == 0 && !isPassenger,
+            Row = _row,
+            isPassenger = _isPassenger,
+            isDriver = _row == 0 && !_isPassenger,
             VehicleMessageBus = vehicleMessageBus
         });
     }
@@ -48,18 +48,25 @@ public class SeatController : MonoBehaviourBase
     protected override void OnEnable()
     {
         base.OnEnable();
-        _sceneMessageBus.Subscribe<VehicleGunAimEvent>(OnGunAim);
+        vehicleMessageBus.Subscribe<VehicleGunAimEvent>(OnGunAim);
         vehicleMessageBus.Subscribe<PlayerVehicleSeatEvent>(OnSeatEvent);
+        vehicleMessageBus.Subscribe<PlayerGunFireEvent>(OnGunFire);
     }
 
-    private void OnSeatEvent(PlayerVehicleSeatEvent @event)
+  private void OnGunFire(PlayerGunFireEvent @event)
+  {
+    //Will need to tie this in to which player is which player
+    LogDebug($"OnGunFire for row {_row}, isPassenger: {_isPassenger}");
+  }
+
+  private void OnSeatEvent(PlayerVehicleSeatEvent @event)
     {
         
     }
 
   protected void OnDisable()
     {
-        _sceneMessageBus.Unsubscribe<VehicleGunAimEvent>(OnGunAim);
+        vehicleMessageBus.Unsubscribe<VehicleGunAimEvent>(OnGunAim);
     }
 
     private void OnGunAim(VehicleGunAimEvent evt)
@@ -83,7 +90,7 @@ public class SeatController : MonoBehaviourBase
 
     protected override void DrawGizmosSafe()
     {
-        if (showGizmos == false || gunPivot == null || (row != 0 && isPassenger))
+        if (showGizmos == false || gunPivot == null || (_row != 0 && _isPassenger))
         {
             return;
         }

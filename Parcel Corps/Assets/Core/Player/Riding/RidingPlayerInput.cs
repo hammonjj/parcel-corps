@@ -61,7 +61,6 @@ public class RidingPlayerInput : MonoBehaviourBase
         }
 
         LogDebug("Firing gun from riding input.");
-
         _vehicleMessageBus?.Publish(new PlayerGunFireEvent());
     }
 

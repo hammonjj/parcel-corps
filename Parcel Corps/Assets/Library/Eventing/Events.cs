@@ -7,6 +7,22 @@ public struct PlayerMovementEvent
   public float VerticalMovement;
 }
 
+
+
+public struct PlayerGunFireEvent { }
+
+public struct PlayerInRangeEvent { }
+public struct PlayerOutOfRangeEvent { }
+public struct DisableThirdPersonControlsEvent { }
+
+/////////////////////////////////////////////////////////////////////
+// Vehicle Events
+/////////////////////////////////////////////////////////////////////
+public struct VehicleSteerEvent
+{
+  public float SteeringAngle;
+}
+
 public struct PlayerEnterVehicleEvent
 { 
   public MessageBus VehicleMessageBus;
@@ -33,9 +49,3 @@ public struct VehicleGunAimEvent
 {
   public float HorizontalInput;
 }
-
-public struct PlayerGunFireEvent { }
-
-public struct PlayerInRangeEvent { }
-public struct PlayerOutOfRangeEvent { }
-public struct DisableThirdPersonControlsEvent {}

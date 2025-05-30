@@ -1,10 +1,15 @@
+using System.Collections.Generic;
 using UnityEngine;
+using Library;
 
 public class VehicleController : MonoBehaviourBase
 {
+  [Header("Vehicle Settings")]
+  [SerializeField] private BaseVehicleData _vehicleData;
+  [ReadOnly] [SerializeField] List<VehicleSeatPoint> _seats = new();
+
   [Header("Vehicle Transforms")]
   [SerializeField] private VehicleState _vehicleState;
-  [SerializeField] private MessageBus _messageBus;
   [SerializeField] private Transform _driverSeat;
   [SerializeField] private Transform _driverExit;
 
@@ -17,15 +22,7 @@ public class VehicleController : MonoBehaviourBase
   [SerializeField] private WheelCollider _rearLeftWheel;
   [SerializeField] private WheelCollider _rearRightWheel;
 
-  [SerializeField] private Transform _frontLeftTransform;
-  [SerializeField] private Transform _frontRightTransform;
-  [SerializeField] private Transform _rearLeftTransform;
-  [SerializeField] private Transform _rearRightTransform;
-
-  //Convert to scriptable object later
-  [Header("Vehicle Settings")]
-  [SerializeField] private BaseVehicleData _vehicleData;
-
+  private MessageBus _messageBus;
   private Rigidbody _playerRb;
   private Collider _playerCol;
   private Transform _playerRoot;
@@ -41,15 +38,14 @@ public class VehicleController : MonoBehaviourBase
     {
       LogError("MessageBus not assigned");
     }
-
+    _messageBus = GetComponent<MessageBus>();
+    _messageBus.Subscribe<PlayerDrivingEvent>(OnPlayerDriving);
     _sceneMessageBus.Subscribe<PlayerEnterVehicleEvent>(OnPlayerEnterVehicle);
     _sceneMessageBus.Subscribe<PlayerExitVehicleEvent>(OnPlayerExitVehicle);
-    _messageBus.Subscribe<PlayerDrivingEvent>(OnPlayerDriving);
   }
 
   private void OnPlayerDriving(PlayerDrivingEvent @event)
   {
-    LogDebug("OnPlayerDriving");
     _steering = @event.Steering;
     _throttle = @event.Throttle;
     _brake = @event.Brake;
@@ -100,7 +96,7 @@ public class VehicleController : MonoBehaviourBase
 
     // 3) Snap them into the seat -> Might want to move this to the SeatController and move the driving piece there as well
     var closestIndex = GameObjectUtils.FindClosestTransformIndex(_playerRoot, _loadingPoints);
-    
+
     _playerRoot.position = _ridingPoints[closestIndex].position;
     _playerRoot.rotation = _ridingPoints[closestIndex].rotation;
 
@@ -115,6 +111,11 @@ public class VehicleController : MonoBehaviourBase
     var steer = _steering * _vehicleData.maxSteeringAngle;
     _frontLeftWheel.steerAngle = steer;
     _frontRightWheel.steerAngle = steer;
+
+    _messageBus.Publish(new VehicleSteerEvent
+    {
+      SteeringAngle = steer
+    });
   }
 
   private void ApplyTorque()
@@ -148,4 +149,32 @@ public class VehicleController : MonoBehaviourBase
     ApplyTorque();
     ApplyBrake();
   }
+
+#if UNITY_EDITOR
+  [ContextMenu("Auto-Fill From Children")]
+  public void AutoFillFromHierarchy()
+  {
+    _seats.Clear();
+    
+    foreach (Transform child in transform.GetComponentsInChildren<Transform>())
+    {
+      if (!child.name.StartsWith("Seat_")) { continue; }
+
+      var point = new VehicleSeatPoint
+      {
+        SeatName = child.name,
+        SeatTransform = child,
+        LoadingTransform = child.Find("Loading"),
+        FireTransform = child.Find("Fire"),
+        IsPassenger = child.name.Contains("Passenger"),
+        IsDriver = child.name.Contains("Driver")
+      };
+
+      _seats.Add(point);
+      LogDebug($"Found child: {point.SeatName}, Passenger: {point.IsPassenger}, Driver: {point.IsDriver}");
+    }
+
+    Debug.Log($"[{name}] Auto-filled {_seats.Count} seat points.");
+  }
+#endif
 }
